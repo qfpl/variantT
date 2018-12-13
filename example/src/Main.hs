@@ -14,11 +14,12 @@ module Main where
 import Bound.Class (Bound(..))
 import Bound.Scope (Scope(..), abstract1, toScope)
 import Bound.Var (Var(..))
-import Control.Lens.Fold (preview)
+import Control.Lens.Fold ((^?), preview)
 import Control.Lens.Review ((#))
 import Control.Lens.TH (makePrisms)
 import Control.Monad (ap)
 import Data.Deriving (deriveShow1)
+import Data.Foldable (asum)
 import Data.Functor.Classes (Show1(..), showsPrec1)
 import Data.Functor.Identity (Identity)
 
@@ -84,6 +85,20 @@ pattern Add
 pattern Add a b <- (preview (_More._CtorT) -> Just (AddT a b))
   where
     Add a b = More (_CtorT # AddT a b)
+
+stepAddT
+  :: (CtorT vs AddT, CtorT vs IntT)
+  => (FixT (VariantT vs) a -> Maybe (FixT (VariantT vs) a))
+  -> FixT (VariantT vs) a
+  -> Maybe (FixT (VariantT vs) a)
+stepAddT step (Add a b) =
+  asum
+    [ step a
+    , step b
+    , case (a, b) of
+        (Int n, Int m) -> pure $ Int (n+m)
+        _ -> error "add: stuck"
+    ]
 
 
 data ExprT f a
