@@ -7,6 +7,8 @@
 {-# language TemplateHaskell #-}
 {-# language UndecidableInstances #-}
 {-# language QuantifiedConstraints #-}
+
+{-# language RankNTypes #-}
 module Main where
 
 import Bound.Class (Bound(..))
@@ -15,7 +17,7 @@ import Bound.Var (Var(..))
 import Control.Lens.Fold (preview)
 import Control.Lens.Review ((#))
 import Control.Lens.TH (makePrisms)
-import Control.Monad (ap, guard)
+import Control.Monad (ap)
 import Data.Deriving (deriveShow1)
 import Data.Functor.Classes (Show1(..), showsPrec1)
 import Data.Functor.Identity (Identity)
